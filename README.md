@@ -17,6 +17,7 @@ The goal is to make AI-assisted project work safer and more repeatable by docume
 - debugging before declaring work blocked
 - session handoffs
 - data-growth controls such as manifest plus validator hooks
+- connector-backed repository operations
 
 ## Privacy boundary
 
@@ -41,6 +42,7 @@ Use sanitized, generic examples only.
 - `runbooks/privacy-before-publishing.md`
 - `runbooks/pr-gate.md`
 - `runbooks/debug-before-blocking.md`
+- `runbooks/github-connector-operator.md`
 - `patterns/five-line-handoff.md`
 - `patterns/manifest-plus-validator.md`
 
