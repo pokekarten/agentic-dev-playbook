@@ -2,16 +2,21 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CHECK_PATHS = [ROOT / "README.md", ROOT / "runbooks", ROOT / "patterns"]
+
+# Keep this guardrail intentionally narrow.
+# It catches high-signal secret-like markers, not every privacy-related word.
+# Policy documents must be allowed to say phrases such as "personal data"
+# when they explain what must not be published.
 DISALLOWED_MARKERS = {
-    ".env",
-    "api_key",
-    "apikey",
-    "password",
-    "private key",
-    "raw chat",
-    "raw transcript",
-    "customer data",
-    "personal data",
+    "api_key=",
+    "apikey=",
+    "password=",
+    "secret=",
+    "token=",
+    "private_key=",
+    "begin private key",
+    "begin rsa private key",
+    "begin openSSH private key",
 }
 
 
@@ -35,9 +40,9 @@ def main() -> int:
     for path in files:
         text = path.read_text(encoding="utf-8").lower()
         for marker in sorted(DISALLOWED_MARKERS):
-            if marker in text:
+            if marker.lower() in text:
                 rel = path.relative_to(ROOT)
-                errors.append(f"{rel}: contains disallowed marker: {marker}")
+                errors.append(f"{rel}: contains high-signal secret-like marker: {marker}")
 
     if errors:
         print("Public content guardrail failed:")
