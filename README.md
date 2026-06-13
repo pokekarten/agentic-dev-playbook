@@ -10,6 +10,7 @@ The goal is to make AI-assisted project work safer and more repeatable by docume
 
 - repository context separation
 - repository inventory before status reporting
+- privacy checks before publishing public process knowledge
 - pull request gate reviews
 - small safe implementation slices
 - debugging before declaring work blocked
@@ -35,6 +36,7 @@ Use sanitized, generic examples only.
 
 - `runbooks/repo-context-separation.md`
 - `runbooks/repository-inventory-before-status.md`
+- `runbooks/privacy-before-publishing.md`
 - `runbooks/pr-gate.md`
 - `runbooks/debug-before-blocking.md`
 - `patterns/five-line-handoff.md`
