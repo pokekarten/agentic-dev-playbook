@@ -1,0 +1,32 @@
+name: Public content guardrail
+
+on:
+  pull_request:
+    paths:
+      - "README.md"
+      - "runbooks/**/*.md"
+      - "patterns/**/*.md"
+      - "scripts/check_public_content.py"
+      - ".github/workflows/public-content-guardrail.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "README.md"
+      - "runbooks/**/*.md"
+      - "patterns/**/*.md"
+      - "scripts/check_public_content.py"
+      - ".github/workflows/public-content-guardrail.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  public-content-guardrail:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Check public content
+        run: python3 scripts/check_public_content.py
