@@ -9,6 +9,7 @@ This repository contains public, reusable playbooks for small agentic software-d
 The goal is to make AI-assisted project work safer and more repeatable by documenting generic patterns for:
 
 - repository context separation
+- repository inventory before status reporting
 - pull request gate reviews
 - small safe implementation slices
 - debugging before declaring work blocked
@@ -33,6 +34,7 @@ Use sanitized, generic examples only.
 ## First playbooks
 
 - `runbooks/repo-context-separation.md`
+- `runbooks/repository-inventory-before-status.md`
 - `runbooks/pr-gate.md`
 - `runbooks/debug-before-blocking.md`
 - `patterns/five-line-handoff.md`
