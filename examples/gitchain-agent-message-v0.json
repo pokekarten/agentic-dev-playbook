@@ -1,0 +1,19 @@
+{
+  "kind": "AGENT_MSG",
+  "version": "v0",
+  "id": "agmsg-example-0001",
+  "from": "agent:example-scanner",
+  "to": "agent:example-gate",
+  "scope": "public-demo",
+  "type": "handoff",
+  "status": "open",
+  "ttl": "2026-06-14T21:00:00Z",
+  "body": "Demo scanner found one public-safe gateable item. No private project state included.",
+  "evidence": {
+    "uri": "examples/demo-evidence.md",
+    "hash": "sha256:demo-evidence-placeholder"
+  },
+  "body_hash": "sha256:demo-body-placeholder",
+  "prev_message_hash": "sha256:null",
+  "signature": "none:demo-only"
+}
