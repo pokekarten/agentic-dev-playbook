@@ -1,0 +1,16 @@
+{
+  "kind": "TASK_BLOCK",
+  "version": "v0",
+  "cycle_id": "20260614-20",
+  "slot": "slot00",
+  "minute": 2,
+  "task": "coordinate runway",
+  "result_state": "planned",
+  "public_summary": "Coordinator slot planned a public-safe cycle without publishing private project details.",
+  "candidate_type": "note",
+  "evidence_hash": "sha256:null",
+  "previous_task_hash": "sha256:null",
+  "task_hash": "sha256:taskblockexample0001",
+  "timestamp": "2026-06-14T20:02:00+02:00",
+  "public_safety": "public-safe"
+}
