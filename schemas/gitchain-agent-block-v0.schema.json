@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/gitchain-agent-block-v0.schema.json",
+  "title": "GitChain Agent Block v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "version",
+    "height",
+    "prev_block_hash",
+    "message_root",
+    "messages",
+    "node_id",
+    "repo_commit",
+    "timestamp",
+    "attestations"
+  ],
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": ["AGENT_BLOCK"]
+    },
+    "version": {
+      "type": "string",
+      "enum": ["v0"]
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "prev_block_hash": {
+      "type": "string",
+      "pattern": "^(sha256:[A-Za-z0-9._:-]+|sha256:null)$"
+    },
+    "message_root": {
+      "type": "string",
+      "pattern": "^sha256:[A-Za-z0-9._:-]+$"
+    },
+    "messages": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "string",
+        "pattern": "^sha256:[A-Za-z0-9._:-]+$"
+      }
+    },
+    "node_id": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 240
+    },
+    "repo_commit": {
+      "type": "string",
+      "pattern": "^git-sha:[A-Za-z0-9._:-]+$"
+    },
+    "timestamp": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 80
+    },
+    "attestations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 500
+      }
+    }
+  }
+}
