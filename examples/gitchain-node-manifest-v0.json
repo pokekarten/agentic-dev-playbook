@@ -1,0 +1,24 @@
+{
+  "kind": "GITCHAIN_NODE",
+  "version": "v0",
+  "node_id": "github:example-owner/example-repo",
+  "operator": "github:example-owner",
+  "wallet_id": "wallet:github:example-owner",
+  "inbox": "https://github.com/example-owner/example-repo/issues/1",
+  "ledger_path": "gitchain/",
+  "capabilities": [
+    "publish_public_commitments",
+    "mirror_public_blocks",
+    "validate_public_blocks"
+  ],
+  "public_safety_policy": "gitchain-public-safety-v0",
+  "private_data_policy": {
+    "publish_private_messages": false,
+    "publish_private_salts": false,
+    "publish_private_project_state": false
+  },
+  "public_endpoints": {
+    "repository": "https://github.com/example-owner/example-repo",
+    "pages": "https://example-owner.github.io/example-repo/"
+  }
+}
