@@ -1,0 +1,36 @@
+{
+  "kind": "GITCHAIN_CYCLE_BLOCK",
+  "version": "v0",
+  "height": 1,
+  "cycle_id": "demo-20260614-21",
+  "previous_block_hash": "sha256:genesis000000000000000000000000000000000000000000000000000000",
+  "commitment_root": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+  "policy_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "schema_version": "gitchain-cycle-block-v0",
+  "producer_id": "producer:github:example-owner/example-repo",
+  "producer_wallet_id": "wallet:github:example-owner",
+  "commitments": [
+    {
+      "commitment_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+      "node_id": "github:example-owner/example-repo",
+      "slot_id": "slot24"
+    }
+  ],
+  "proof": {
+    "type": "proof-of-useful-work-v0",
+    "public_safety_valid": true,
+    "schema_valid": true,
+    "policy_hash_known": true,
+    "previous_block_hash_linked": true,
+    "nonce": 42,
+    "proof_hash": "sha256:000demo444444444444444444444444444444444444444444444444444444"
+  },
+  "timestamp": "2026-06-14T21:36:00Z",
+  "public_safety": {
+    "contains_private_message": false,
+    "contains_secret": false,
+    "contains_personal_data": false,
+    "contains_private_project_state": false,
+    "note": "Dummy cycle block. It references only public-safe commitments."
+  }
+}
