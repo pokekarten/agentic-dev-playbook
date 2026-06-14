@@ -1,0 +1,14 @@
+{
+  "kind": "AGENT_BLOCK",
+  "version": "v0",
+  "height": 1,
+  "prev_block_hash": "sha256:null",
+  "message_root": "sha256:demomessageroot",
+  "messages": [
+    "sha256:agmsgexample0001"
+  ],
+  "node_id": "example-node",
+  "repo_commit": "git-sha:democommit",
+  "timestamp": "2026-06-14T18:00:00Z",
+  "attestations": []
+}
