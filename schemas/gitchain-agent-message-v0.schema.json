@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/gitchain-agent-message-v0.schema.json",
+  "title": "GitChain Agent Message v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "version",
+    "id",
+    "from",
+    "to",
+    "scope",
+    "type",
+    "status",
+    "ttl",
+    "body",
+    "evidence",
+    "body_hash",
+    "prev_message_hash",
+    "signature"
+  ],
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": ["AGENT_MSG", "AGENT_CHAT", "RESEARCH_NOTE"]
+    },
+    "version": {
+      "type": "string",
+      "enum": ["v0"]
+    },
+    "id": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120
+    },
+    "from": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120
+    },
+    "to": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "handoff",
+        "request",
+        "ack",
+        "blocker",
+        "claim",
+        "release",
+        "decision",
+        "evidence",
+        "health",
+        "research_seed",
+        "observation"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["open", "claimed", "done", "blocked", "expired", "cancelled", "non_binding"]
+    },
+    "ttl": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 80
+    },
+    "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uri", "hash"],
+      "properties": {
+        "uri": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^(sha256|git-sha):[A-Za-z0-9._:-]+$"
+        }
+      }
+    },
+    "body_hash": {
+      "type": "string",
+      "pattern": "^sha256:[A-Za-z0-9._:-]+$"
+    },
+    "prev_message_hash": {
+      "type": "string",
+      "pattern": "^(sha256:[A-Za-z0-9._:-]+|sha256:null)$"
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^(ed25519|none):[A-Za-z0-9._:-]+$"
+    }
+  }
+}
