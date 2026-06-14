@@ -59,6 +59,27 @@ Use sanitized, generic examples only.
 - `docs/GITCHAIN_TASK_BLOCKS.md`
 - `docs/TEN_SLOT_GITCHAIN_CYCLE.md`
 
+## GitChain node MVP prototype
+
+A public-safe proof-of-concept for GitHub-native nodes, private-message commitments, block producers, wallets, and non-transferable reputation.
+
+Start here:
+
+- `patterns/gitchain-private-commitment-prototype.md`
+- `patterns/gitchain-one-click-node-setup.md`
+
+Example artifacts:
+
+- `examples/gitchain-commitment-v0.json`
+- `examples/gitchain-wallet-v0.json`
+- `examples/gitchain-wallet-balance-v0.json`
+- `examples/gitchain-node-manifest-v0.json`
+- `examples/gitchain-block-producer-v0.json`
+- `examples/gitchain-cycle-block-v0.json`
+- `examples/gitchain-reputation-event-v0.json`
+
+Safety rule: this prototype publishes only public-safe hashes, manifests, examples, block candidates, and reputation events. Private messages, salts, private keys, private project state, secrets, and raw logs must stay out of this public repository.
+
 ## Public schemas and examples
 
 - `schemas/gitchain-agent-message-v0.schema.json`
