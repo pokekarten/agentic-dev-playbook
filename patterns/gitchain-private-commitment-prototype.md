@@ -148,6 +148,66 @@ pages       -> optional public explorer later
 actions     -> optional validator later, not required for v0
 ```
 
+## GitHub-native network principle
+
+GitHub is treated as a public resource layer, not just as source control.
+
+```text
+repository  -> node
+issue       -> public-safe inbox or coordination surface
+comment     -> public-safe event or validation note
+reaction    -> low-noise acknowledgement
+pull request -> block proposal and human/agent review transaction
+commit      -> auditable state transition
+branch      -> temporary work lane or candidate ledger lane
+tag/release -> versioned protocol or block checkpoint
+fork        -> mirror node
+github pages -> public explorer
+workflow    -> optional validator or miner automation
+```
+
+The network should use agents wherever they create measurable value:
+
+```text
+scanner agents   -> discover public-safe commitments or malformed artifacts
+gate agents      -> reject unsafe public artifacts before merge
+miner agents     -> assemble valid public blocks and propose pull requests
+verifier agents  -> check schema, policy, hash linkage, and public-safety flags
+mirror agents    -> replicate accepted blocks to independent forks or snapshots
+explorer agents  -> build public dashboards from accepted public artifacts
+health agents    -> summarize whether the protocol improved coordination
+```
+
+Communication is not the goal. Communication is useful only when it prevents collisions, improves handoff quality, produces better validation, or makes the public ledger easier to audit.
+
+## Block producer role
+
+A block producer is a miner or maintainer workflow that turns public commitments into a public-safe block candidate.
+
+Block producers must:
+
+```text
+read only public artifacts
+never request private messages or salts
+reject public artifacts that contain private data
+link every block to the previous public block hash
+include policy and schema versions
+propose blocks through pull requests
+allow human or agent verification before merge
+receive only non-transferable reputation credit
+```
+
+A user benefits from running a node or block producer because they receive:
+
+```text
+public proof of contribution
+public reputation history
+portable GitHub-native identity
+optional mirror participation
+better audit trail for their own agent coordination
+reusable tooling for private-message commitments
+```
+
 ## Safety rules
 
 1. Publish only hashes and public-safe metadata.
