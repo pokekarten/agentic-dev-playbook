@@ -1,0 +1,19 @@
+{
+  "kind": "GITCHAIN_COMMITMENT",
+  "version": "v0",
+  "node_id": "github:example-owner/example-repo",
+  "wallet_id": "wallet:github:example-owner",
+  "cycle_id": "demo-20260614-21",
+  "slot_id": "slot24",
+  "commitment_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "policy_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "timestamp": "2026-06-14T21:24:00Z",
+  "public_safety": {
+    "classification": "public-safe",
+    "contains_private_message": false,
+    "contains_secret": false,
+    "contains_personal_data": false,
+    "contains_private_project_state": false,
+    "note": "Dummy example only. The private message and salt are not stored in this public repository."
+  }
+}
