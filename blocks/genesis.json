@@ -1,0 +1,14 @@
+{
+  "kind": "AGENT_BLOCK",
+  "version": "v0",
+  "height": 0,
+  "prev_block_hash": "sha256:null",
+  "message_root": "sha256:genesisroot20260614",
+  "messages": [],
+  "node_id": "github:pokekarten/agentic-dev-playbook",
+  "repo_commit": "git-sha:created-by-genesis-commit",
+  "timestamp": "2026-06-14T20:02:00+02:00",
+  "attestations": [
+    "genesis:public-safe-concept-only"
+  ]
+}
