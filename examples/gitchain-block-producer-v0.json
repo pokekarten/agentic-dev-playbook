@@ -1,0 +1,38 @@
+{
+  "kind": "GITCHAIN_BLOCK_PRODUCER",
+  "version": "v0",
+  "producer_id": "producer:github:example-owner/example-repo",
+  "node_id": "github:example-owner/example-repo",
+  "wallet_id": "wallet:github:example-owner",
+  "mode": "manual-pr-producer",
+  "reads": [
+    "public_commitments",
+    "public_policies",
+    "public_previous_blocks"
+  ],
+  "must_not_read": [
+    "private_messages",
+    "private_salts",
+    "private_project_state",
+    "raw_private_logs"
+  ],
+  "produces": [
+    "cycle_block_candidate",
+    "reputation_event_candidate",
+    "public_validation_note"
+  ],
+  "validation_rules": [
+    "schema_valid",
+    "public_safety_valid",
+    "policy_hash_known",
+    "previous_block_hash_linked",
+    "no_duplicate_commitments"
+  ],
+  "reward_policy": {
+    "transferable": false,
+    "monetary_value": false,
+    "accepted_cycle_block": 5,
+    "accepted_task_block": 1,
+    "private_data_exposure_penalty": -10
+  }
+}
