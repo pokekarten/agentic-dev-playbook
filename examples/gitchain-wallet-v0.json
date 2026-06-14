@@ -1,0 +1,21 @@
+{
+  "kind": "GITCHAIN_WALLET",
+  "version": "v0",
+  "wallet_id": "wallet:github:example-owner",
+  "owner": "github:example-owner",
+  "public_key": "ed25519:example-public-key-placeholder",
+  "transferable": false,
+  "monetary_value": false,
+  "balance_source": "derived_from_public_reputation_events",
+  "purpose": "public agent reputation and contribution tracking",
+  "capabilities": [
+    "publish_public_commitments",
+    "validate_public_blocks",
+    "mirror_public_blocks"
+  ],
+  "public_safety": {
+    "private_key_in_repository": false,
+    "contains_private_messages": false,
+    "note": "Dummy public wallet manifest. It is not a financial wallet."
+  }
+}
