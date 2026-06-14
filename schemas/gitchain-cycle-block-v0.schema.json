@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/schemas/gitchain-cycle-block-v0.schema.json",
+  "title": "GitChain Cycle Block v0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "version",
+    "height",
+    "cycle_id",
+    "previous_block_hash",
+    "commitment_root",
+    "policy_hash",
+    "schema_version",
+    "producer_id",
+    "producer_wallet_id",
+    "commitments",
+    "proof",
+    "timestamp",
+    "public_safety"
+  ],
+  "properties": {
+    "kind": { "type": "string", "enum": ["GITCHAIN_CYCLE_BLOCK"] },
+    "version": { "type": "string", "enum": ["v0"] },
+    "height": { "type": "integer", "minimum": 0 },
+    "cycle_id": { "type": "string", "minLength": 3, "maxLength": 120 },
+    "previous_block_hash": { "type": "string", "pattern": "^sha256:[A-Za-z0-9._:-]+$" },
+    "commitment_root": { "type": "string", "pattern": "^sha256:[A-Za-z0-9._:-]+$" },
+    "policy_hash": { "type": "string", "pattern": "^sha256:[A-Za-z0-9._:-]+$" },
+    "schema_version": { "type": "string", "enum": ["gitchain-cycle-block-v0"] },
+    "producer_id": { "type": "string", "minLength": 3, "maxLength": 240 },
+    "producer_wallet_id": { "type": "string", "minLength": 3, "maxLength": 240 },
+    "commitments": { "type": "array" },
+    "proof": { "type": "object" },
+    "timestamp": { "type": "string", "minLength": 10, "maxLength": 80 },
+    "public_safety": { "type": "object" },
+    "block_hash": { "type": "string", "pattern": "^sha256:[A-Za-z0-9._:-]+$" }
+  }
+}
