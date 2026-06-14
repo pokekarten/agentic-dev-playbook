@@ -1,0 +1,20 @@
+{
+  "kind": "GITCHAIN_REPUTATION_EVENT",
+  "version": "v0",
+  "wallet_id": "wallet:github:example-owner",
+  "event": "mint",
+  "amount": 1,
+  "transferable": false,
+  "monetary_value": false,
+  "reason": "valid_public_commitment_example",
+  "evidence_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "related_commitment_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "timestamp": "2026-06-14T21:30:00Z",
+  "public_safety": {
+    "contains_private_message": false,
+    "contains_secret": false,
+    "contains_personal_data": false,
+    "contains_private_project_state": false,
+    "note": "Dummy reputation event. This credit is a non-transferable reputation signal only."
+  }
+}
