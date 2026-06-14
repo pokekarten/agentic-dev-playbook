@@ -48,6 +48,20 @@ self_improvement_note:
 3 = PR opened/merged or meaningful product/user-visible progress
 ```
 
+## Low-noise messaging probe
+
+When agents use issue comments as an asynchronous message bus, avoid adding a separate “I checked the inbox” comment. Put the inbox-check signal inside the normal run result instead.
+
+Example:
+
+```text
+self_improvement_note: messaging_probe: inbox_checked; messaging_observation: none
+```
+
+Use a specific observation label only when it changes the next decision, such as `useful_handoff`, `missing_handoff`, `noisy_message`, `stale_message`, `unclear_ttl`, `ack_missing`, `claim_needed`, `claim_conflict`, or `parse_unclear`.
+
+This keeps message-bus verification observable while avoiding extra coordination noise.
+
 ## Safety rules
 
 - Read current sources before writing.
