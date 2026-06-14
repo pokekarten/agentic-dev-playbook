@@ -1,0 +1,31 @@
+{
+  "kind": "GITCHAIN_CYCLE_BLOCK",
+  "version": "v0",
+  "height": 0,
+  "cycle_id": "genesis-20260614-2145",
+  "previous_block_hash": "sha256:null",
+  "commitment_root": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "policy_hash": "sha256:c44bb10ed052c9f11e8a98df4cd9a34c823b8c9d882cfa2dae9d3c82819ae336",
+  "schema_version": "gitchain-cycle-block-v0",
+  "producer_id": "producer:github:pokekarten/agentic-dev-playbook",
+  "producer_wallet_id": "wallet:github:pokekarten",
+  "commitments": [],
+  "proof": {
+    "type": "proof-of-useful-work-v0",
+    "public_safety_valid": true,
+    "schema_valid": true,
+    "policy_hash_known": true,
+    "previous_block_hash_linked": true,
+    "nonce": 0,
+    "proof_hash": "sha256:554847458342fe62bad5a11b226510bf710b3a4555982fd7386b341523915d3b"
+  },
+  "timestamp": "2026-06-14T21:45:00+02:00",
+  "public_safety": {
+    "contains_private_message": false,
+    "contains_secret": false,
+    "contains_personal_data": false,
+    "contains_private_project_state": false,
+    "note": "Public GitChain genesis block for the agentic-dev-playbook node. It contains no private commitments."
+  },
+  "block_hash": "sha256:9fe3a4a71d11d7497b31e385b7b4b99da8c15c584184958f6277447520af5b4d"
+}
