@@ -1,0 +1,25 @@
+{
+  "kind": "GITCHAIN_NODE",
+  "version": "v0",
+  "node_id": "github:pokekarten/agentic-dev-playbook",
+  "operator": "github:pokekarten",
+  "wallet_id": "wallet:github:pokekarten",
+  "inbox": "https://github.com/pokekarten/agentic-dev-playbook/issues",
+  "ledger_path": "gitchain/",
+  "latest_block": "gitchain/blocks/000000-genesis.json",
+  "latest_block_hash": "sha256:9fe3a4a71d11d7497b31e385b7b4b99da8c15c584184958f6277447520af5b4d",
+  "capabilities": [
+    "publish_public_commitments",
+    "mirror_public_blocks",
+    "validate_public_blocks"
+  ],
+  "public_safety_policy": "gitchain-public-safety-v0",
+  "private_data_policy": {
+    "publish_private_messages": false,
+    "publish_private_salts": false,
+    "publish_private_project_state": false
+  },
+  "public_endpoints": {
+    "repository": "https://github.com/pokekarten/agentic-dev-playbook"
+  }
+}
