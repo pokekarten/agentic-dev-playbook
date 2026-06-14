@@ -19,6 +19,9 @@ The goal is to make AI-assisted project work safer and more repeatable by docume
 - data-growth controls such as manifest plus validator hooks
 - connector-backed repository operations
 - WIP-limited progress loops
+- Git-backed public agent nodes
+- low-noise agent messaging
+- public-safe task and cycle records
 
 ## Privacy boundary
 
@@ -47,6 +50,20 @@ Use sanitized, generic examples only.
 - `runbooks/wip-limited-progress-loop.md`
 - `patterns/five-line-handoff.md`
 - `patterns/manifest-plus-validator.md`
+
+## Public agent-node patterns
+
+- `docs/AGENTIC_CONTROL_PLANE_PATTERN.md`
+- `docs/AGENT_BUS_PUBLIC_NODE_CONCEPT.md`
+- `docs/GITCHAIN_AGENT_MESSAGING.md`
+- `docs/GITCHAIN_TASK_BLOCKS.md`
+- `docs/TEN_SLOT_GITCHAIN_CYCLE.md`
+
+## Public schemas and examples
+
+- `schemas/gitchain-agent-message-v0.schema.json`
+- `schemas/gitchain-agent-block-v0.schema.json`
+- `examples/gitchain-task-block-v0.json`
 
 ## License
 
