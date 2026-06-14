@@ -1,0 +1,23 @@
+{
+  "kind": "GITCHAIN_WALLET_BALANCE",
+  "version": "v0",
+  "wallet_id": "wallet:github:example-owner",
+  "owner": "github:example-owner",
+  "as_of_block_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+  "transferable": false,
+  "monetary_value": false,
+  "total_reputation": 8,
+  "categories": {
+    "commitments": 1,
+    "mining": 5,
+    "verification": 2,
+    "mirroring": 0,
+    "security": 0,
+    "documentation": 0
+  },
+  "calculation": {
+    "source": "public_reputation_events",
+    "method": "sum accepted non-transferable reputation events minus penalties",
+    "contains_private_messages": false
+  }
+}
