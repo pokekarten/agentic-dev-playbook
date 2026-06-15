@@ -1,0 +1,87 @@
+name: Public agent control validation
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: public-agent-control-validation
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  validate-demo-candidates:
+    name: Validate public-safe demo candidates
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Show Python version
+        run: python3 --version
+
+      - name: Generate demo fixtures
+        run: python3 examples/hash-chain/generate_demo_fixtures.py
+
+      - name: Validate positive fixtures
+        run: |
+          python3 examples/hash-chain/validate_candidate_envelope.py \
+            validation-output/generated-fixtures/valid.json \
+            validation-output/generated-fixtures/no_block.json \
+            | tee validation-output/positive-validation.txt
+
+      - name: Validate negative fixtures fail as expected
+        run: |
+          set +e
+          python3 examples/hash-chain/validate_candidate_envelope.py \
+            validation-output/generated-fixtures/reject_hash_only.json \
+            > validation-output/reject-hash-only.txt 2>&1
+          hash_only_status=$?
+
+          python3 examples/hash-chain/validate_candidate_envelope.py \
+            validation-output/generated-fixtures/reject_bad_hash.json \
+            > validation-output/reject-bad-hash.txt 2>&1
+          bad_hash_status=$?
+
+          set -e
+
+          if [ "$hash_only_status" -eq 0 ]; then
+            echo "Expected reject_hash_only.json to fail, but it passed." >&2
+            cat validation-output/reject-hash-only.txt >&2
+            exit 1
+          fi
+
+          if [ "$bad_hash_status" -eq 0 ]; then
+            echo "Expected reject_bad_hash.json to fail, but it passed." >&2
+            cat validation-output/reject-bad-hash.txt >&2
+            exit 1
+          fi
+
+          echo "Negative fixtures failed as expected." | tee validation-output/negative-validation.txt
+
+      - name: Write validation summary
+        run: |
+          cat > validation-output/summary.md <<'EOF'
+          # Public agent control validation summary
+
+          This manual workflow validates public-safe demo candidate envelopes only.
+
+          It does not use secrets, does not write repository state, does not read private project truth, and does not run on a schedule.
+
+          Expected result:
+
+          - `valid.json`: pass
+          - `no_block.json`: pass
+          - `reject_hash_only.json`: fail intentionally
+          - `reject_bad_hash.json`: fail intentionally
+          EOF
+
+      - name: Upload validation output
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-agent-control-validation-output
+          path: validation-output
+          retention-days: 7
