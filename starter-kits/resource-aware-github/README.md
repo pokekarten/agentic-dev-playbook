@@ -8,7 +8,7 @@ A copyable baseline for small AI-assisted repositories that need to make progres
 - one read-only GitHub Actions gate
 - one role contract for AI and connector operators
 - one canary protocol for proving the workflow before product work
-- one JSON Schema for validating policy files
+- one bundled JSON Schema for validating policy files
 
 ## Design goals
 
@@ -23,18 +23,29 @@ A copyable baseline for small AI-assisted repositories that need to make progres
 
 ## Files to copy
 
+Copy the complete contents of this starter-kit directory so all relative references remain valid:
+
 ```text
 .agentic/repo-policy.json
 .github/workflows/resource-aware-gate.yml
+schemas/resource-aware-repo-policy-v1.schema.json
 AGENTS.md
 docs/CANARY_PROTOCOL.md
 ```
 
-The policy file can be validated against:
+The policy points to the bundled schema through:
 
 ```text
-schemas/resource-aware-repo-policy-v1.schema.json
+../schemas/resource-aware-repo-policy-v1.schema.json
 ```
+
+from `.agentic/repo-policy.json`.
+
+## Pull-request behavior
+
+For a `pull_request` run, GitHub sets `GITHUB_SHA` to the pull-request merge commit. The gate validates the policy at that tested merge ref and separately records the contributor head SHA as evidence. This keeps the read-only API lookup compatible with pull requests from forks while preserving an exact head identifier for review.
+
+The workflow also listens for `merge_group` so the same required check can report when a repository later enables a merge queue.
 
 ## Recommended operating flow
 
@@ -62,7 +73,7 @@ Issue or verified target
 
 ## Adoption order
 
-1. Copy the files into a sandbox repository.
+1. Copy the complete starter-kit directory contents into a sandbox repository.
 2. Run every canary in `docs/CANARY_PROTOCOL.md`.
 3. Keep the gate read-only until the canaries are green.
 4. Add a real product only after the stale-head, queued-runner and duplicate-comment cases are proven.
