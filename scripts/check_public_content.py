@@ -1,7 +1,6 @@
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CHECK_PATHS = [ROOT / "README.md", ROOT / "runbooks", ROOT / "patterns"]
 
 # Keep this guardrail intentionally narrow.
 # It catches high-signal secret-like markers, not every privacy-related word.
@@ -16,18 +15,16 @@ DISALLOWED_MARKERS = {
     "private_key=",
     "begin private key",
     "begin rsa private key",
-    "begin openSSH private key",
+    "begin openssh private key",
 }
 
 
 def iter_markdown_files() -> list[Path]:
-    files: list[Path] = []
-    for path in CHECK_PATHS:
-        if path.is_file() and path.suffix == ".md":
-            files.append(path)
-        elif path.is_dir():
-            files.extend(sorted(path.rglob("*.md")))
-    return sorted(files)
+    return sorted(
+        path
+        for path in ROOT.rglob("*.md")
+        if ".git" not in path.parts and path.is_file()
+    )
 
 
 def main() -> int:

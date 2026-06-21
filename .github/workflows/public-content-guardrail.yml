@@ -2,24 +2,17 @@ name: Public content guardrail
 
 on:
   pull_request:
-    paths:
-      - "README.md"
-      - "runbooks/**/*.md"
-      - "patterns/**/*.md"
-      - "scripts/check_public_content.py"
-      - ".github/workflows/public-content-guardrail.yml"
   push:
     branches:
       - main
-    paths:
-      - "README.md"
-      - "runbooks/**/*.md"
-      - "patterns/**/*.md"
-      - "scripts/check_public_content.py"
-      - ".github/workflows/public-content-guardrail.yml"
+  workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   public-content-guardrail:
@@ -28,5 +21,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Check public content
+
+      - name: Check all public Markdown content
         run: python3 scripts/check_public_content.py
+
+      - name: Check resource-aware starter artifacts
+        run: python3 scripts/check_resource_aware_starter.py
+
+      - name: Parse starter workflow YAML
+        run: |
+          ruby -e 'require "yaml"; YAML.parse_file("starter-kits/resource-aware-github/.github/workflows/resource-aware-gate.yml"); puts "Starter workflow YAML parsed."'

@@ -1,5 +1,5 @@
 {
-  "$schema": "../../../schemas/resource-aware-repo-policy-v1.schema.json",
+  "$schema": "../schemas/resource-aware-repo-policy-v1.schema.json",
   "version": 1,
   "repository": {
     "default_branch": "main",
