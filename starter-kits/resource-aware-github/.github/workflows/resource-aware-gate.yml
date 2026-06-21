@@ -3,12 +3,14 @@ name: Resource-Aware Gate
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  merge_group:
+    types: [checks_requested]
   workflow_dispatch:
 
 permissions: {}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.event.merge_group.head_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -20,7 +22,8 @@ jobs:
       contents: read
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      POLICY_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+      POLICY_REF: ${{ github.sha }}
+      EVIDENCE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Validate resource-aware repository policy
         run: |
@@ -120,7 +123,7 @@ jobs:
                   print(f"- {error}", file=sys.stderr)
               raise SystemExit(1)
 
-          print(f"Resource policy is valid for exact ref {ref}.")
+          print(f"Resource policy is valid at tested ref {ref}.")
           PY
 
       - name: Summarize resource contract
@@ -129,9 +132,11 @@ jobs:
           {
             echo "## Resource-Aware Gate"
             echo ""
-            echo "- Exact ref: \`${POLICY_REF}\`"
+            echo "- Tested ref: \`${POLICY_REF}\`"
+            echo "- Pull-request head for evidence: \`${EVIDENCE_HEAD}\`"
             echo "- Runner: \`ubuntu-latest\`"
             echo "- Permissions: contents read only"
             echo "- No checkout, artifact download, comment write or merge permission"
+            echo "- Pull-request runs validate the GitHub merge ref, which also works for fork PRs"
             echo "- Required check always reports; expensive platform work belongs in conditional jobs, not workflow-level path filters"
           } >> "$GITHUB_STEP_SUMMARY"
