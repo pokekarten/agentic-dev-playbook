@@ -93,7 +93,8 @@ Safety rule: this prototype publishes only public-safe hashes, manifests, exampl
 - `starter-kits/resource-aware-github/.github/workflows/resource-aware-gate.yml` — an always-reporting, read-only policy gate
 - `starter-kits/resource-aware-github/AGENTS.md` — Observer, Planner, Producer, Watcher, Reviewer and Closer contracts
 - `starter-kits/resource-aware-github/docs/CANARY_PROTOCOL.md` — sandbox tests for queues, API limits, stale heads and merge transactions
-- `schemas/resource-aware-repo-policy-v1.schema.json` — reusable policy schema
+- `starter-kits/resource-aware-github/schemas/resource-aware-repo-policy-v1.schema.json` — bundled schema copied with the kit
+- `schemas/resource-aware-repo-policy-v1.schema.json` — canonical playbook copy checked against the bundled schema
 
 ## License
 
