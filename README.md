@@ -86,6 +86,15 @@ Safety rule: this prototype publishes only public-safe hashes, manifests, exampl
 - `schemas/gitchain-agent-block-v0.schema.json`
 - `examples/gitchain-task-block-v0.json`
 
+## Reusable starter kits
+
+- `starter-kits/resource-aware-github/README.md` — a copyable, Free-Tier-aware GitHub operating baseline
+- `starter-kits/resource-aware-github/.agentic/repo-policy.json` — WIP, connector, Actions, evidence and merge policy
+- `starter-kits/resource-aware-github/.github/workflows/resource-aware-gate.yml` — an always-reporting, read-only policy gate
+- `starter-kits/resource-aware-github/AGENTS.md` — Observer, Planner, Producer, Watcher, Reviewer and Closer contracts
+- `starter-kits/resource-aware-github/docs/CANARY_PROTOCOL.md` — sandbox tests for queues, API limits, stale heads and merge transactions
+- `schemas/resource-aware-repo-policy-v1.schema.json` — reusable policy schema
+
 ## License
 
 Apache-2.0

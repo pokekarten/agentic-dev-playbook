@@ -1,0 +1,137 @@
+name: Resource-Aware Gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    name: Resource policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      POLICY_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Validate resource-aware repository policy
+        run: |
+          python3 - <<'PY'
+          import base64
+          import json
+          import os
+          import sys
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+
+          repository = os.environ["GITHUB_REPOSITORY"]
+          token = os.environ["GITHUB_TOKEN"]
+          ref = os.environ["POLICY_REF"]
+          path = ".agentic/repo-policy.json"
+          url = (
+              "https://api.github.com/repos/"
+              + repository
+              + "/contents/"
+              + path
+              + "?ref="
+              + urllib.parse.quote(ref, safe="")
+          )
+          request = urllib.request.Request(
+              url,
+              headers={
+                  "Accept": "application/vnd.github+json",
+                  "Authorization": f"Bearer {token}",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "User-Agent": "resource-aware-gate",
+              },
+          )
+          try:
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  payload = json.load(response)
+          except urllib.error.HTTPError as error:
+              detail = error.read().decode("utf-8", errors="replace")
+              print(f"Unable to read {path} at {ref}: {error.code} {detail}", file=sys.stderr)
+              raise SystemExit(1)
+
+          policy = json.loads(base64.b64decode(payload["content"]).decode("utf-8"))
+          errors = []
+
+          if policy.get("version") != 1:
+              errors.append("version must be 1")
+
+          wip = policy.get("work_in_progress", {})
+          if wip.get("active_targets") != 1:
+              errors.append("work_in_progress.active_targets must be 1")
+          if wip.get("active_implementation_pull_requests") != 1:
+              errors.append("work_in_progress.active_implementation_pull_requests must be 1")
+          if wip.get("parallel_writers_per_branch") != 1:
+              errors.append("work_in_progress.parallel_writers_per_branch must be 1")
+
+          connector = policy.get("connector", {})
+          if connector.get("serial_calls") is not True:
+              errors.append("connector.serial_calls must be true")
+          if connector.get("readback_required") is not True:
+              errors.append("connector.readback_required must be true")
+          if connector.get("max_mutations_per_authorized_cycle") != 1:
+              errors.append("connector.max_mutations_per_authorized_cycle must be 1")
+          if not {403, 429}.issubset(set(connector.get("stop_on_http_status", []))):
+              errors.append("connector.stop_on_http_status must include 403 and 429")
+
+          actions = policy.get("actions", {})
+          if actions.get("event_first") is not True:
+              errors.append("actions.event_first must be true")
+          if actions.get("required_workflows_must_report") is not True:
+              errors.append("actions.required_workflows_must_report must be true")
+          if actions.get("conditional_expensive_steps") is not True:
+              errors.append("actions.conditional_expensive_steps must be true")
+
+          evidence = policy.get("evidence", {})
+          if evidence.get("exact_head_required") is not True:
+              errors.append("evidence.exact_head_required must be true")
+          if evidence.get("old_head_may_authorize") is not False:
+              errors.append("evidence.old_head_may_authorize must be false")
+          if evidence.get("technical_green_is_semantic_approval") is not False:
+              errors.append("evidence.technical_green_is_semantic_approval must be false")
+
+          merge = policy.get("merge", {})
+          if merge.get("expected_head_required") is not True:
+              errors.append("merge.expected_head_required must be true")
+          if merge.get("workflow_may_merge") is not False:
+              errors.append("merge.workflow_may_merge must be false")
+
+          safety = policy.get("safety", {})
+          if safety.get("privileged_jobs_execute_pull_request_code") is not False:
+              errors.append("safety.privileged_jobs_execute_pull_request_code must be false")
+          if safety.get("no_op_commits_for_retries") is not False:
+              errors.append("safety.no_op_commits_for_retries must be false")
+
+          if errors:
+              print("Resource policy validation failed:", file=sys.stderr)
+              for error in errors:
+                  print(f"- {error}", file=sys.stderr)
+              raise SystemExit(1)
+
+          print(f"Resource policy is valid for exact ref {ref}.")
+          PY
+
+      - name: Summarize resource contract
+        if: ${{ always() }}
+        run: |
+          {
+            echo "## Resource-Aware Gate"
+            echo ""
+            echo "- Exact ref: \`${POLICY_REF}\`"
+            echo "- Runner: \`ubuntu-latest\`"
+            echo "- Permissions: contents read only"
+            echo "- No checkout, artifact download, comment write or merge permission"
+            echo "- Required check always reports; expensive platform work belongs in conditional jobs, not workflow-level path filters"
+          } >> "$GITHUB_STEP_SUMMARY"

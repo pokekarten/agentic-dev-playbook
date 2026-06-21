@@ -1,0 +1,69 @@
+{
+  "$schema": "../../../schemas/resource-aware-repo-policy-v1.schema.json",
+  "version": 1,
+  "repository": {
+    "default_branch": "main",
+    "public_ci_preferred": true,
+    "source_of_truth": "current_github_state"
+  },
+  "work_in_progress": {
+    "active_targets": 1,
+    "active_implementation_pull_requests": 1,
+    "parallel_writers_per_branch": 1
+  },
+  "connector": {
+    "lane_first": true,
+    "serial_calls": true,
+    "max_mutations_per_authorized_cycle": 1,
+    "readback_required": true,
+    "fetch_successful_logs": false,
+    "stop_on_http_status": [403, 429]
+  },
+  "actions": {
+    "event_first": true,
+    "recovery_schedule_allowed": true,
+    "default_runner": "ubuntu-latest",
+    "scarce_runners": ["macos-latest", "windows-latest"],
+    "scarce_runner_paths": [
+      "ios/**",
+      "macos/**",
+      "Package.swift",
+      "Package.resolved",
+      "*.xcodeproj/**",
+      "*.xcworkspace/**"
+    ],
+    "required_workflows_must_report": true,
+    "conditional_expensive_steps": true,
+    "cancel_obsolete_runs": true,
+    "artifact_retention_days": 1
+  },
+  "evidence": {
+    "exact_head_required": true,
+    "old_head_may_authorize": false,
+    "technical_green_is_semantic_approval": false,
+    "unresolved_review_threads_allowed": false
+  },
+  "merge": {
+    "draft_direct_merge_allowed": false,
+    "expected_head_required": true,
+    "semantic_review_required": true,
+    "workflow_may_merge": false,
+    "post_merge_readback_required": true
+  },
+  "states": {
+    "runner_queued_or_running": "WAITING_RUNNER",
+    "api_403_or_429": "WAITING_API",
+    "current_head_failure": "FIX_NEEDED",
+    "required_checks_green": "REVIEW_PENDING",
+    "semantic_review_green": "CLOSER_PENDING",
+    "terminal_target": "COMPLETE",
+    "owner_only_boundary": "BLOCKED_OWNER"
+  },
+  "safety": {
+    "privileged_jobs_execute_pull_request_code": false,
+    "cross_repository_credentials": false,
+    "automatic_target_selection_by_workflow": false,
+    "no_op_commits_for_retries": false,
+    "secrets_in_repository_files": false
+  }
+}
