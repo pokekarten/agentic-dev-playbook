@@ -117,4 +117,4 @@ jobs:
             /tmp/portable-r-4.6.1-linux-x86_64.sha256
             /tmp/r-runtime-versions.txt
           if-no-files-found: error
-          retention-days: 1
+          retention-days: 7
