@@ -1,0 +1,124 @@
+name: Build portable R runtime
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/build-portable-r-runtime.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up R 4.6.1
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.6.1'
+          use-public-rspm: true
+
+      - name: Install system libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends \
+            libgsl-dev libcurl4-openssl-dev libssl-dev libxml2-dev file
+
+      - name: Install runtime packages into an isolated library
+        shell: Rscript {0}
+        run: |
+          dir.create('/opt/ffbk-r-lib', recursive = TRUE, showWarnings = FALSE)
+          options(repos = c(CRAN = 'https://cloud.r-project.org'))
+          install.packages(
+            c('MASS', 'copula'),
+            lib = '/opt/ffbk-r-lib',
+            dependencies = c('Depends', 'Imports', 'LinkingTo'),
+            Ncpus = 2L
+          )
+          .libPaths(c('/opt/ffbk-r-lib', .libPaths()))
+          stopifnot(requireNamespace('MASS', quietly = TRUE))
+          stopifnot(requireNamespace('copula', quietly = TRUE))
+          stopifnot(packageVersion('MASS') >= numeric_version('7.3-66'))
+          stopifnot(packageVersion('copula') >= numeric_version('1.1-7'))
+          writeLines(c(
+            paste0('R=', getRversion()),
+            paste0('R_HOME=', R.home()),
+            paste0('MASS=', packageVersion('MASS')),
+            paste0('copula=', packageVersion('copula'))
+          ), '/tmp/r-runtime-versions.txt')
+
+      - name: Assemble relocatable dependency bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          R_HOME_DIR="$(R RHOME)"
+          R_PREFIX="$(dirname "$(dirname "$R_HOME_DIR")")"
+          test "$R_PREFIX" = '/opt/R/4.6.1'
+
+          sudo mkdir -p /opt/ffbk-runtime-lib
+          sudo chown -R "$USER":"$USER" /opt/ffbk-runtime-lib /opt/ffbk-r-lib
+
+          find "$R_PREFIX" /opt/ffbk-r-lib -type f -print0 \
+            | xargs -0 file \
+            | awk -F: '/ELF/ {print $1}' \
+            > /tmp/elf-files.txt
+
+          : > /tmp/linked-libraries.txt
+          while IFS= read -r binary; do
+            ldd "$binary" 2>/dev/null \
+              | awk '/=> \/[^ ]+/ {print $3} /^\// {print $1}' \
+              >> /tmp/linked-libraries.txt || true
+          done < /tmp/elf-files.txt
+
+          sort -u /tmp/linked-libraries.txt | while IFS= read -r library; do
+            test -n "$library" || continue
+            base="$(basename "$library")"
+            case "$base" in
+              libc.so.6|ld-linux-x86-64.so.2|libpthread.so.0|libdl.so.2|librt.so.1|libm.so.6)
+                continue
+                ;;
+            esac
+            cp -L "$library" "/opt/ffbk-runtime-lib/$base"
+          done
+
+          sudo tee /opt/ffbk-rscript >/dev/null <<'LAUNCHER'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          export R_LIBS_SITE=/opt/ffbk-r-lib
+          export LD_LIBRARY_PATH=/opt/ffbk-runtime-lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+          exec /opt/R/4.6.1/bin/Rscript "$@"
+          LAUNCHER
+          sudo chmod 0755 /opt/ffbk-rscript
+
+          /opt/ffbk-rscript -e "stopifnot(getRversion() == numeric_version('4.6.1')); library(MASS); library(copula); cat('portable-runtime-ok\\n')"
+
+          tar -C / -czf /tmp/portable-r-4.6.1-linux-x86_64.tar.gz \
+            opt/R/4.6.1 \
+            opt/ffbk-r-lib \
+            opt/ffbk-runtime-lib \
+            opt/ffbk-rscript
+          (
+            cd /tmp
+            sha256sum portable-r-4.6.1-linux-x86_64.tar.gz \
+              | tee portable-r-4.6.1-linux-x86_64.sha256
+            sha256sum -c portable-r-4.6.1-linux-x86_64.sha256
+          )
+          du -h /tmp/portable-r-4.6.1-linux-x86_64.tar.gz
+
+      - name: Upload portable R runtime
+        uses: actions/upload-artifact@v4
+        with:
+          name: portable-r-4.6.1-linux-x86_64
+          path: |
+            /tmp/portable-r-4.6.1-linux-x86_64.tar.gz
+            /tmp/portable-r-4.6.1-linux-x86_64.sha256
+            /tmp/r-runtime-versions.txt
+          if-no-files-found: error
+          retention-days: 7
