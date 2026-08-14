@@ -104,8 +104,12 @@ jobs:
             opt/ffbk-r-lib \
             opt/ffbk-runtime-lib \
             opt/ffbk-rscript
-          sha256sum /tmp/portable-r-4.6.1-linux-x86_64.tar.gz \
-            | tee /tmp/portable-r-4.6.1-linux-x86_64.sha256
+          (
+            cd /tmp
+            sha256sum portable-r-4.6.1-linux-x86_64.tar.gz \
+              | tee portable-r-4.6.1-linux-x86_64.sha256
+            sha256sum -c portable-r-4.6.1-linux-x86_64.sha256
+          )
           du -h /tmp/portable-r-4.6.1-linux-x86_64.tar.gz
 
       - name: Upload portable R runtime
