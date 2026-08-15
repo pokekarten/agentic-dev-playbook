@@ -7,8 +7,9 @@ import sys
 import tempfile
 import unittest
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "check_commit_email_privacy.py"
-BOOTSTRAP_PATH = ".github/workflows/commit-email-privacy.yml"
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / "scripts" / "check_commit_email_privacy.py"
+WORKFLOW = ROOT / ".github" / "workflows" / "commit-email-privacy.yml"
 
 
 def run_git(repo: Path, *args: str, env: dict[str, str] | None = None) -> str:
@@ -59,9 +60,9 @@ class CommitEmailPrivacyTests(unittest.TestCase):
     def tearDown(self) -> None:
         self.tempdir.cleanup()
 
-    def check(self, head: str, *extra: str, base: str | None = None) -> subprocess.CompletedProcess[str]:
+    def check(self, head: str, *, base: str | None = None) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
-            [sys.executable, str(SCRIPT), base or self.base, head, *extra],
+            [sys.executable, str(SCRIPT), base or self.base, head],
             cwd=self.repo,
             check=False,
             text=True,
@@ -74,21 +75,21 @@ class CommitEmailPrivacyTests(unittest.TestCase):
         result = self.check(head)
         self.assertEqual(result.returncode, 0, result.stderr)
 
-    def test_gmail_author_is_blocked(self) -> None:
-        head = commit_file(self.repo, "author.txt", "bad\n", author_email="person@gmail.com")
+    def test_gmail_author_is_blocked_without_reprinting_address(self) -> None:
+        blocked = "person@gmail.com"
+        head = commit_file(self.repo, "author.txt", "bad\n", author_email=blocked)
         result = self.check(head)
         self.assertEqual(result.returncode, 1)
-        self.assertIn("author.email=person@gmail.com", result.stderr)
+        self.assertIn("author.email uses a blocked personal mail domain", result.stderr)
+        self.assertNotIn(blocked, result.stderr)
 
-    def test_googlemail_committer_is_blocked(self) -> None:
-        head = commit_file(
-            self.repo,
-            "committer.txt",
-            "bad\n",
-            committer_email="person@googlemail.com",
-        )
+    def test_googlemail_committer_is_blocked_without_reprinting_address(self) -> None:
+        blocked = "person@googlemail.com"
+        head = commit_file(self.repo, "committer.txt", "bad\n", committer_email=blocked)
         result = self.check(head)
         self.assertEqual(result.returncode, 1)
+        self.assertIn("committer.email uses a blocked personal mail domain", result.stderr)
+        self.assertNotIn(blocked, result.stderr)
 
     def test_domain_match_is_case_insensitive(self) -> None:
         head = commit_file(self.repo, "mixed.txt", "bad\n", author_email="person@GMAIL.COM")
@@ -99,29 +100,22 @@ class CommitEmailPrivacyTests(unittest.TestCase):
         result = self.check(head, base="not-a-sha")
         self.assertEqual(result.returncode, 2)
 
-    def test_one_commit_bootstrap_reports_but_passes(self) -> None:
-        head = commit_file(
-            self.repo,
-            BOOTSTRAP_PATH,
-            "name: Commit Email Privacy\n",
-            author_email="person@gmail.com",
-        )
-        result = self.check(head, "--bootstrap-path", BOOTSTRAP_PATH)
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("BOOTSTRAP", result.stderr)
-        self.assertIn("VIOLATION", result.stderr)
-
-    def test_bootstrap_does_not_allow_multiple_new_commits(self) -> None:
-        commit_file(
-            self.repo,
-            BOOTSTRAP_PATH,
-            "name: Commit Email Privacy\n",
-            author_email="person@gmail.com",
-        )
-        head = commit_file(self.repo, "extra.txt", "bad\n", author_email="person@gmail.com")
-        result = self.check(head, "--bootstrap-path", BOOTSTRAP_PATH)
-        self.assertEqual(result.returncode, 1)
-        self.assertNotIn("BOOTSTRAP", result.stderr)
+    def test_workflow_uses_base_trusted_pull_request_target_boundary(self) -> None:
+        text = WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("pull_request_target:", text)
+        self.assertNotIn("\n  pull_request:\n", text)
+        self.assertIn("contents: read", text)
+        self.assertIn("github.event.pull_request.base.ref", text)
+        self.assertIn("github.event.pull_request.base.sha", text)
+        self.assertIn("github.event.pull_request.head.sha", text)
+        self.assertIn("github.event.pull_request.number", text)
+        self.assertIn("refs/pull/${PR_NUMBER}/head", text)
+        self.assertIn('rev-parse refs/remotes/origin/privacy-base)" = "${BASE_SHA}', text)
+        self.assertIn('rev-parse refs/remotes/origin/privacy-head)" = "${HEAD_SHA}', text)
+        self.assertIn('git checkout --detach "${BASE_SHA}"', text)
+        self.assertNotIn('git checkout --detach "${HEAD_SHA}"', text)
+        self.assertNotIn("actions/checkout", text)
+        self.assertIn("python3 scripts/check_commit_email_privacy.py", text)
 
 
 if __name__ == "__main__":
