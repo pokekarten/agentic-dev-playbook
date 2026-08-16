@@ -1,0 +1,38 @@
+name: One-time stale branch prune
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Delete only branches fully contained in main
+        shell: bash
+        run: |
+          set -euo pipefail
+          branches=(
+            'agent/canonical-knowledge-routing'
+            'agent/portable-r-4.6.1-runtime'
+            'privacy/6-commit-email-gate'
+            'agent/base-trusted-commit-email-privacy'
+            'chatgpt/resource-aware-starter-pack'
+            'chatgpt/resource-aware-starter-hardening'
+          )
+
+          for branch in "${branches[@]}"; do
+            ahead="$(gh api "repos/${GITHUB_REPOSITORY}/compare/main...${branch}" --jq '.ahead_by')"
+            if [[ "$ahead" != "0" ]]; then
+              echo "REFUSE: ${branch} is ${ahead} commit(s) ahead of main" >&2
+              exit 1
+            fi
+            gh api --method DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${branch}"
+            echo "deleted ${branch}"
+          done
