@@ -1,0 +1,32 @@
+name: jungle-flareon-reference-transfer
+
+on:
+  push:
+    branches:
+      - chatgpt/jungle-flareon-reference-20260921
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Fetch Flareon Jungle reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          URL='https://www.cardtrader.com/uploads/blueprints/image/121469/flareon-holo-rare-3-64-jungle.jpg'
+          curl -fL --retry 5 --retry-delay 3 -o jungle-flareon-3-64-front.jpg "$URL"
+          file jungle-flareon-3-64-front.jpg
+          sha256sum jungle-flareon-3-64-front.jpg > jungle-flareon-3-64-front.jpg.sha256
+      - name: Upload reference artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jungle-flareon-3-64-front
+          path: |
+            jungle-flareon-3-64-front.jpg
+            jungle-flareon-3-64-front.jpg.sha256
+          retention-days: 1
