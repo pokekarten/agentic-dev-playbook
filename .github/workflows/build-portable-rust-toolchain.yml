@@ -1,0 +1,71 @@
+name: Build portable Rust toolchain
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/build-portable-rust-toolchain.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Install and smoke-test Rust
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install stable --profile minimal
+          rustc +stable --version --verbose
+          cargo +stable --version
+
+          sysroot="$(rustc +stable --print sysroot)"
+          test -x "$sysroot/bin/rustc"
+          test -x "$sysroot/bin/cargo"
+
+          # Copy the toolchain as a single, relocatable prefix.
+          dest=/tmp/portable-rust-stage/opt/portable-rust
+          mkdir -p "$dest"
+          cp -a "$sysroot/." "$dest/"
+
+          # Test the copied binaries, not rustup's dispatch wrappers.
+          "$dest/bin/rustc" --version
+          "$dest/bin/cargo" --version
+          cat > /tmp/portable-rust-smoke.rs <<'RS'
+          fn main() {
+              println!("portable-rust-ok");
+          }
+          RS
+          "$dest/bin/rustc" /tmp/portable-rust-smoke.rs -o /tmp/portable-rust-smoke
+          test "$(/tmp/portable-rust-smoke)" = "portable-rust-ok"
+
+          version="$("$dest/bin/rustc" --version | awk '{print $2}')"
+          archive="/tmp/portable-rust-${version}-linux-x86_64.tar.gz"
+          tar -C /tmp/portable-rust-stage -czf "$archive" opt/portable-rust
+          (cd /tmp && sha256sum "$(basename "$archive")" | tee portable-rust.sha256)
+          (cd /tmp && sha256sum -c portable-rust.sha256)
+          {
+            "$dest/bin/rustc" --version --verbose
+            "$dest/bin/cargo" --version
+            ldd --version | head -1
+            uname -m
+          } > /tmp/portable-rust-versions.txt
+          du -h "$archive"
+
+      - name: Upload portable Rust toolchain
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: portable-rust-linux-x86_64
+          path: |
+            /tmp/portable-rust-*-linux-x86_64.tar.gz
+            /tmp/portable-rust.sha256
+            /tmp/portable-rust-versions.txt
+          if-no-files-found: error
+          retention-days: 7
